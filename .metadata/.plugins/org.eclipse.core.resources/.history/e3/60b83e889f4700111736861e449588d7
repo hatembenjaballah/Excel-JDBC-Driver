@@ -1,0 +1,5 @@
+package com.exceljdbc.table;
+
+public class TableManager {
+
+}

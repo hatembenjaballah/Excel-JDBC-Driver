@@ -1,0 +1,146 @@
+package com.exceljdbc.table;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class TableManager {
+    private final Workbook workbook;
+
+    public TableManager(Workbook workbook) {
+        this.workbook = workbook;
+    }
+
+    public List<Map<String, Object>> getTableData(String tableName) {
+        Sheet sheet = workbook.getSheet(tableName);
+        if (sheet == null) return Collections.emptyList();
+        List<Map<String, Object>> rows = new ArrayList<>();
+        Iterator<Row> rowIter = sheet.iterator();
+        if (!rowIter.hasNext()) return rows;
+
+        Row headerRow = rowIter.next();
+        List<String> columns = new ArrayList<>();
+        for (Cell cell : headerRow) {
+            columns.add(cell.getStringCellValue().trim());
+        }
+
+        while (rowIter.hasNext()) {
+            Row row = rowIter.next();
+            Map<String, Object> rowMap = new LinkedHashMap<>();
+            for (int i = 0; i < columns.size(); i++) {
+                Cell cell = row.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+                rowMap.put(columns.get(i), getCellValue(cell));
+            }
+            rows.add(rowMap);
+        }
+        return rows;
+    }
+
+    private Object getCellValue(Cell cell) {
+        if (cell == null) return null;
+        switch (cell.getCellType()) {
+            case STRING: return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) return cell.getDateCellValue();
+                double num = cell.getNumericCellValue();
+                if (num == Math.floor(num) && !Double.isInfinite(num)) return (long) num;
+                return num;
+            case BOOLEAN: return cell.getBooleanCellValue();
+            case FORMULA:
+                try {
+                    return cell.getNumericCellValue();
+                } catch (Exception e) {
+                    return cell.getStringCellValue();
+                }
+            default: return null;
+        }
+    }
+
+    public List<String> getTableNames() {
+        return Collections.list(workbook.sheetIterator()).stream()
+                .map(Sheet::getSheetName)
+                .collect(Collectors.toList());
+    }
+
+    public void createTable(String tableName, List<String> columnDefs) {
+        Sheet sheet = workbook.createSheet(tableName);
+        Row header = sheet.createRow(0);
+        for (int i = 0; i < columnDefs.size(); i++) {
+            String colDef = columnDefs.get(i);
+            // colDef comme "colonne TYPE", on extrait juste le nom
+            String colName = colDef.split("\\s+")[0];
+            header.createCell(i).setCellValue(colName);
+        }
+    }
+
+    public void dropTable(String tableName) {
+        int index = workbook.getSheetIndex(tableName);
+        if (index >= 0) workbook.removeSheetAt(index);
+    }
+
+    public void insertRow(String tableName, Map<String, Object> values) {
+        Sheet sheet = workbook.getSheet(tableName);
+        if (sheet == null) return;
+        // récupérer les colonnes d'en-tête
+        Row header = sheet.getRow(0);
+        Map<String, Integer> colIndex = new HashMap<>();
+        for (int i = 0; i < header.getLastCellNum(); i++) {
+            colIndex.put(header.getCell(i).getStringCellValue().trim(), i);
+        }
+        int lastRow = sheet.getLastRowNum();
+        Row newRow = sheet.createRow(lastRow + 1);
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            Integer idx = colIndex.get(entry.getKey());
+            if (idx != null) {
+                Cell cell = newRow.createCell(idx);
+                setCellValue(cell, entry.getValue());
+            }
+        }
+    }
+
+    public void updateRows(String tableName, List<Map<String, Object>> updatedRows) {
+        // Écriture complète : on efface tout et on réécrit les lignes + header
+        Sheet sheet = workbook.getSheet(tableName);
+        // Récupérer les colonnes de l'en-tête
+        List<String> columns = new ArrayList<>();
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) return;
+        for (Cell c : headerRow) columns.add(c.getStringCellValue().trim());
+        // Supprimer toutes les lignes sauf l'en-tête
+        for (int i = sheet.getLastRowNum(); i > 0; i--) {
+            Row r = sheet.getRow(i);
+            if (r != null) sheet.removeRow(r);
+        }
+        // Réécrire les données
+        int rowIdx = 1;
+        for (Map<String, Object> rowMap : updatedRows) {
+            Row row = sheet.createRow(rowIdx++);
+            for (int i = 0; i < columns.size(); i++) {
+                Cell cell = row.createCell(i);
+                Object val = rowMap.get(columns.get(i));
+                if (val != null) setCellValue(cell, val);
+            }
+        }
+    }
+
+    private void setCellValue(Cell cell, Object val) {
+        if (val == null) return;
+        if (val instanceof String) cell.setCellValue((String) val);
+        else if (val instanceof Long) cell.setCellValue((Long) val);
+        else if (val instanceof Integer) cell.setCellValue((Integer) val);
+        else if (val instanceof Double) cell.setCellValue((Double) val);
+        else if (val instanceof Date) cell.setCellValue((Date) val);
+        else if (val instanceof Boolean) cell.setCellValue((Boolean) val);
+        else cell.setCellValue(val.toString());
+    }
+
+    public void save() throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(((File) workbook.getPackagePart().getPackage().getPackageProperties().getCategoryProperty().getValue()))) {
+            workbook.write(fos);
+        }
+    }
+}

@@ -1,0 +1,30 @@
+package com.exceljdbc;
+
+import java.sql.*;
+import java.util.List;
+
+public class ExcelDatabaseMetaData implements DatabaseMetaData {
+    private final ExcelConnection connection;
+
+    public ExcelDatabaseMetaData(ExcelConnection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+        List<String> tableNames = connection.getTableManager().getTableNames();
+        // Construire un ResultSet conforme à la spec JDBC
+        // Pour simplifier, on retourne un ResultSet avec les colonnes TABLE_NAME, TABLE_TYPE
+        // ...
+        return null; // À implémenter correctement
+    }
+
+    @Override public boolean supportsResultSetType(int type) { return type == ResultSet.TYPE_FORWARD_ONLY; }
+    @Override public boolean supportsResultSetConcurrency(int type, int concurrency) { return concurrency == ResultSet.CONCUR_READ_ONLY; }
+    @Override public String getDriverName() { return "Excel JDBC Driver"; }
+    @Override public String getDriverVersion() { return "1.0"; }
+    @Override public int getDriverMajorVersion() { return 1; }
+    @Override public int getDriverMinorVersion() { return 0; }
+    @Override public Connection getConnection() { return connection; }
+    // ... nombreuses autres méthodes avec valeurs par défaut
+}

@@ -1,0 +1,960 @@
+!SESSION 2026-05-04 11:44:22.760 -----------------------------------------------
+eclipse.buildId=4.19.0.202306150758
+java.version=17.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-05-04 11:44:23.649
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.jface 2 0 2026-05-04 11:45:25.296
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-04 11:45:25.296
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-05-04 11:45:28.541
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\hatem.benjaballah'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:50:34.811
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.eclipse.jface 2 0 2026-05-04 11:50:35.633
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-04 11:50:35.633
+!MESSAGE A conflict occurred for CTRL+SHIFT+C:
+Binding(CTRL+SHIFT+C,
+	ParameterizedCommand(Command(org.eclipse.tm4e.languageconfiguration.toggleLineCommentCommand,Toggle Line Comment,
+		,
+		Category(org.eclipse.tm4e.languageconfiguration.category,TM4E Language Configuration,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.tm4e.languageconfiguration.toggleLineCommentCommand"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.textEditorScope,,,system)
+Binding(CTRL+SHIFT+C,
+	ParameterizedCommand(Command(org.springframework.tooling.boot.ls.ToggleComment,Toggle Comment,
+		,
+		Category(org.springframework.ide.eclipse.commands,Spring Generic Text Editor,Spring Language Server Commands,true),
+		WorkbenchHandlerServiceHandler("org.springframework.tooling.boot.ls.ToggleComment"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.textEditorScope,,,system)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:50:36.444
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:50:36.550
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:09.751
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:09.772
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:10.031
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:10.936
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:10.952
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:12.032
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:51:20.748
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:52:29.899
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 11:52:30.116
+!MESSAGE Command list starting LS: org.springframework.tooling.boot.ls
+START:
+C:\sts-4.19.0.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.7.v20230425-1502\jre\bin\javaw.exe
+-cp
+C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes;C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\lib\*
+-Dsts.lsp.client=eclipse
+-Dlsp.completions.indentation.enable=true
+-Xmx1024m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:TieredStopAtLevel=1
+-Xlog:jni+resolve=off
+-Dspring.config.location=file:C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes\application.properties
+-XX:ErrorFile=C:/Users/hatem.benjaballah/Documents/workspace-jdbc-drivers/.metadata/.plugins/org.springframework.tooling.boot.ls/fatal-error-spring-boot_1777888350116
+org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+--languageserver.hover-timeout=225
+END
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:52:30.118
+!MESSAGE DelegatingStreamConnectionProvider - Starting Boot LS
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 11:52:30.124
+!MESSAGE Started org.springframework.tooling.boot.ls LS process 13796
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-05-04 11:52:30.137
+!MESSAGE org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+!STACK 0
+java.lang.ClassNotFoundException: org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+	at org.eclipse.osgi.internal.loader.BundleLoader.generateException(BundleLoader.java:541)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:536)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:416)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:168)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:622)
+	at org.eclipse.lsp4e.LanguageServersRegistry$ExtensionLanguageServerDefinition.getServerInterface(LanguageServersRegistry.java:196)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$1(LanguageServerWrapper.java:291)
+	at java.base/java.util.concurrent.CompletableFuture$UniRun.tryFire(CompletableFuture.java:787)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:52:41.467
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:52:48.583
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:52:55.738
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:53:04.239
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:53:12.247
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:53:19.868
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:53:55.913
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:54:25.576
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:54:40.512
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:54:53.740
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:56:32.053
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:56:34.335
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:56:36.786
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:56:38.030
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:57:26.068
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:57:56.993
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:58:09.279
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:58:19.412
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:58:36.405
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 11:59:08.803
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-05-04 12:15:26.298
+!MESSAGE Timeout waiting for data to generate LS hover
+!STACK 0
+java.util.concurrent.TimeoutException
+	at java.base/java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1960)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2095)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+!SESSION 2026-05-04 14:04:55.056 -----------------------------------------------
+eclipse.buildId=4.19.0.202306150758
+java.version=17.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-05-04 14:04:55.988
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-05-04 14:04:59.562
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.jface 2 0 2026-05-04 14:05:04.346
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-04 14:05:04.346
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 14:05:07.218
+!MESSAGE Command list starting LS: org.springframework.tooling.boot.ls
+START:
+C:\sts-4.19.0.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.7.v20230425-1502\jre\bin\javaw.exe
+-cp
+C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes;C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\lib\*
+-Dsts.lsp.client=eclipse
+-Dlsp.completions.indentation.enable=true
+-Xmx1024m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:TieredStopAtLevel=1
+-Xlog:jni+resolve=off
+-Dspring.config.location=file:C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes\application.properties
+-XX:ErrorFile=C:/Users/hatem.benjaballah/Documents/workspace-jdbc-drivers/.metadata/.plugins/org.springframework.tooling.boot.ls/fatal-error-spring-boot_1777896307216
+org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+--languageserver.hover-timeout=225
+END
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:05:07.220
+!MESSAGE DelegatingStreamConnectionProvider - Starting Boot LS
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 14:05:07.239
+!MESSAGE Started org.springframework.tooling.boot.ls LS process 4752
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-05-04 14:05:07.267
+!MESSAGE org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+!STACK 0
+java.lang.ClassNotFoundException: org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+	at org.eclipse.osgi.internal.loader.BundleLoader.generateException(BundleLoader.java:541)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:536)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:416)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:168)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:622)
+	at org.eclipse.lsp4e.LanguageServersRegistry$ExtensionLanguageServerDefinition.getServerInterface(LanguageServersRegistry.java:196)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$1(LanguageServerWrapper.java:291)
+	at java.base/java.util.concurrent.CompletableFuture$UniRun.tryFire(CompletableFuture.java:787)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-05-04 14:05:09.061
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\hatem.benjaballah'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:08:33.038
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+!SESSION 2026-05-04 14:17:33.597 -----------------------------------------------
+eclipse.buildId=4.19.0.202306150758
+java.version=17.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-05-04 14:17:34.479
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-05-04 14:17:38.224
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.jface 2 0 2026-05-04 14:17:42.694
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-04 14:17:42.694
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 14:17:44.551
+!MESSAGE Command list starting LS: org.springframework.tooling.boot.ls
+START:
+C:\sts-4.19.0.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.7.v20230425-1502\jre\bin\javaw.exe
+-cp
+C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes;C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\lib\*
+-Dsts.lsp.client=eclipse
+-Dlsp.completions.indentation.enable=true
+-Xmx1024m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:TieredStopAtLevel=1
+-Xlog:jni+resolve=off
+-Dspring.config.location=file:C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes\application.properties
+-XX:ErrorFile=C:/Users/hatem.benjaballah/Documents/workspace-jdbc-drivers/.metadata/.plugins/org.springframework.tooling.boot.ls/fatal-error-spring-boot_1777897064550
+org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+--languageserver.hover-timeout=225
+END
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:17:44.554
+!MESSAGE DelegatingStreamConnectionProvider - Starting Boot LS
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 14:17:44.574
+!MESSAGE Started org.springframework.tooling.boot.ls LS process 8180
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-05-04 14:17:44.608
+!MESSAGE org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+!STACK 0
+java.lang.ClassNotFoundException: org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+	at org.eclipse.osgi.internal.loader.BundleLoader.generateException(BundleLoader.java:541)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:536)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:416)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:168)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:622)
+	at org.eclipse.lsp4e.LanguageServersRegistry$ExtensionLanguageServerDefinition.getServerInterface(LanguageServersRegistry.java:196)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$1(LanguageServerWrapper.java:291)
+	at java.base/java.util.concurrent.CompletableFuture$UniRun.tryFire(CompletableFuture.java:787)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-05-04 14:17:46.408
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\hatem.benjaballah'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:17:48.075
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-05-04 14:26:07.488
+!MESSAGE Javadoc unavailable. Failed to obtain it.
+!STACK 0
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-05-04 14:26:13.987
+!MESSAGE Javadoc unavailable. Failed to obtain it.
+!STACK 0
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:26:15.611
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:39:26.040
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:46:02.844
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:46:31.871
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:49:26.797
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 14:55:28.094
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+!SESSION 2026-05-04 15:11:58.647 -----------------------------------------------
+eclipse.buildId=4.19.0.202306150758
+java.version=17.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-05-04 15:11:59.760
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-05-04 15:12:03.716
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.jface 2 0 2026-05-04 15:12:09.275
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-04 15:12:09.275
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 15:12:11.139
+!MESSAGE Command list starting LS: org.springframework.tooling.boot.ls
+START:
+C:\sts-4.19.0.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.7.v20230425-1502\jre\bin\javaw.exe
+-cp
+C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes;C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\lib\*
+-Dsts.lsp.client=eclipse
+-Dlsp.completions.indentation.enable=true
+-Xmx1024m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:TieredStopAtLevel=1
+-Xlog:jni+resolve=off
+-Dspring.config.location=file:C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes\application.properties
+-XX:ErrorFile=C:/Users/hatem.benjaballah/Documents/workspace-jdbc-drivers/.metadata/.plugins/org.springframework.tooling.boot.ls/fatal-error-spring-boot_1777900331138
+org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+--languageserver.hover-timeout=225
+END
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:12:11.142
+!MESSAGE DelegatingStreamConnectionProvider - Starting Boot LS
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-04 15:12:11.219
+!MESSAGE Started org.springframework.tooling.boot.ls LS process 5828
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-05-04 15:12:11.266
+!MESSAGE org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+!STACK 0
+java.lang.ClassNotFoundException: org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+	at org.eclipse.osgi.internal.loader.BundleLoader.generateException(BundleLoader.java:541)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:536)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:416)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:168)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:622)
+	at org.eclipse.lsp4e.LanguageServersRegistry$ExtensionLanguageServerDefinition.getServerInterface(LanguageServersRegistry.java:196)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$1(LanguageServerWrapper.java:291)
+	at java.base/java.util.concurrent.CompletableFuture$UniRun.tryFire(CompletableFuture.java:787)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-05-04 15:12:13.080
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\hatem.benjaballah'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:13:12.379
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:13:29.676
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:14:04.609
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:14:11.445
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-05-04 15:18:49.737
+!MESSAGE Timeout waiting for data to generate LS hover
+!STACK 0
+java.util.concurrent.TimeoutException
+	at java.base/java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1960)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2095)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:19:24.257
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:20:05.699
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:20:20.497
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-04 15:24:13.068
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+!SESSION 2026-05-05 01:42:31.377 -----------------------------------------------
+eclipse.buildId=4.19.0.202306150758
+java.version=17.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-05-05 01:42:32.338
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-05-05 01:42:34.846
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.jface 2 0 2026-05-05 01:42:40.263
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-05 01:42:40.263
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-05 01:42:45.087
+!MESSAGE Command list starting LS: org.springframework.tooling.boot.ls
+START:
+C:\sts-4.19.0.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.7.v20230425-1502\jre\bin\javaw.exe
+-cp
+C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes;C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\lib\*
+-Dsts.lsp.client=eclipse
+-Dlsp.completions.indentation.enable=true
+-Xmx1024m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:TieredStopAtLevel=1
+-Xlog:jni+resolve=off
+-Dspring.config.location=file:C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes\application.properties
+-XX:ErrorFile=C:/Users/hatem.benjaballah/Documents/workspace-jdbc-drivers/.metadata/.plugins/org.springframework.tooling.boot.ls/fatal-error-spring-boot_1777938165086
+org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+--languageserver.hover-timeout=225
+END
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:42:45.092
+!MESSAGE DelegatingStreamConnectionProvider - Starting Boot LS
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-05 01:42:45.198
+!MESSAGE Started org.springframework.tooling.boot.ls LS process 2152
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-05-05 01:42:45.247
+!MESSAGE org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+!STACK 0
+java.lang.ClassNotFoundException: org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+	at org.eclipse.osgi.internal.loader.BundleLoader.generateException(BundleLoader.java:541)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:536)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:416)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:168)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:622)
+	at org.eclipse.lsp4e.LanguageServersRegistry$ExtensionLanguageServerDefinition.getServerInterface(LanguageServersRegistry.java:196)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$1(LanguageServerWrapper.java:291)
+	at java.base/java.util.concurrent.CompletableFuture$UniRun.tryFire(CompletableFuture.java:787)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-05-05 01:42:48.364
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\hatem.benjaballah'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:45:38.817
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-05-05 01:45:48.300
+!MESSAGE Javadoc unavailable. Failed to obtain it.
+!STACK 0
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:45:52.106
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:46:17.084
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:47:43.447
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:52:38.488
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:53:26.736
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:56:35.362
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:57:06.895
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 01:57:15.093
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:01:17.930
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:03:52.612
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:09:26.822
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.eclipse.jface 2 0 2026-05-05 02:16:45.571
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-05 02:16:45.571
+!MESSAGE A conflict occurred for CTRL+SHIFT+C:
+Binding(CTRL+SHIFT+C,
+	ParameterizedCommand(Command(org.eclipse.tm4e.languageconfiguration.toggleLineCommentCommand,Toggle Line Comment,
+		,
+		Category(org.eclipse.tm4e.languageconfiguration.category,TM4E Language Configuration,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.tm4e.languageconfiguration.toggleLineCommentCommand"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.textEditorScope,,,system)
+Binding(CTRL+SHIFT+C,
+	ParameterizedCommand(Command(org.springframework.tooling.boot.ls.ToggleComment,Toggle Comment,
+		,
+		Category(org.springframework.ide.eclipse.commands,Spring Generic Text Editor,Spring Language Server Commands,true),
+		WorkbenchHandlerServiceHandler("org.springframework.tooling.boot.ls.ToggleComment"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.textEditorScope,,,system)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:17:11.094
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:20:08.289
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:22:05.975
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:22:51.064
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:22:51.467
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:26:02.368
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 02:26:02.771
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 09:25:21.293
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 09:38:01.907
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 09:38:01.984
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 09:38:03.107
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 09:38:03.492
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 09:39:28.422
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 10:05:37.060
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 10:06:19.416
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 10:06:19.747
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 12:31:06.911
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 12:31:08.282
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 12:31:31.254
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 12:31:46.307
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 12:31:46.559
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 14:04:37.314
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 14:51:48.844
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 14:52:02.763
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 14:52:41.766
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 14:52:56.453
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 14:52:56.744
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:49:34.393
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:49:56.844
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:50:43.538
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:51:57.016
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:52:33.170
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:52:47.815
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:52:48.052
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:54:41.809
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:54:52.896
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 15:54:53.173
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+!SESSION 2026-05-05 16:27:08.737 -----------------------------------------------
+eclipse.buildId=4.19.0.202306150758
+java.version=17.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_FR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY org.eclipse.emf.ecore 2 0 2026-05-05 16:27:10.029
+!MESSAGE Both 'org.eclipse.jst.j2ee.core' and 'org.eclipse.jst.j2ee.core' register a package for 'application.xmi'
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-05-05 16:27:13.497
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.jface 2 0 2026-05-05 16:27:19.602
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-05 16:27:19.602
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.eclipse.egit.ui 2 0 2026-05-05 16:27:23.158
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\hatem.benjaballah'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-05 16:27:33.501
+!MESSAGE Command list starting LS: org.springframework.tooling.boot.ls
+START:
+C:\sts-4.19.0.RELEASE\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_17.0.7.v20230425-1502\jre\bin\javaw.exe
+-cp
+C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes;C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\lib\*
+-Dsts.lsp.client=eclipse
+-Dlsp.completions.indentation.enable=true
+-Xmx1024m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:TieredStopAtLevel=1
+-Xlog:jni+resolve=off
+-Dspring.config.location=file:C:\sts-4.19.0.RELEASE\plugins\org.springframework.tooling.boot.ls_1.47.0.202306150731\servers\spring-boot-language-server\BOOT-INF\classes\application.properties
+-XX:ErrorFile=C:/Users/hatem.benjaballah/Documents/workspace-jdbc-drivers/.metadata/.plugins/org.springframework.tooling.boot.ls/fatal-error-spring-boot_1777991253499
+org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+--languageserver.hover-timeout=225
+END
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:27:33.504
+!MESSAGE DelegatingStreamConnectionProvider - Starting Boot LS
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2026-05-05 16:27:33.511
+!MESSAGE Started org.springframework.tooling.boot.ls LS process 17064
+
+!ENTRY org.eclipse.lsp4e 4 0 2026-05-05 16:27:33.536
+!MESSAGE org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+!STACK 0
+java.lang.ClassNotFoundException: org.springframework.ide.vscode.commons.protocol.spring.SpringModelLanguageServer cannot be found by org.springframework.tooling.boot.ls_1.47.0.202306150731
+	at org.eclipse.osgi.internal.loader.BundleLoader.generateException(BundleLoader.java:541)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:536)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:416)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:168)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:622)
+	at org.eclipse.lsp4e.LanguageServersRegistry$ExtensionLanguageServerDefinition.getServerInterface(LanguageServersRegistry.java:196)
+	at org.eclipse.lsp4e.LanguageServerWrapper.lambda$1(LanguageServerWrapper.java:291)
+	at java.base/java.util.concurrent.CompletableFuture$UniRun.tryFire(CompletableFuture.java:787)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1773)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1760)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165)
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:27:47.552
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:28:17.883
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:29:19.781
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:32:17.475
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:32:29.077
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:32:52.864
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:33:25.230
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:34:19.828
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:34:55.193
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:35:35.663
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:38:40.465
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:39:03.389
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:39:03.816
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:42:52.395
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:43:07.388
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-05 16:43:07.718
+!MESSAGE Classpath changed for project: excel-jdbc-driver
+
+!ENTRY org.springframework.tooling.boot.ls 1 0 2026-05-07 12:53:16.031
+!MESSAGE Classpath changed for project: excel-jdbc-driver

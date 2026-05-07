@@ -1,0 +1,87 @@
+package com.exceljdbc;
+
+import java.sql.*;
+import java.util.List;
+import java.util.Map;
+
+public class ExcelStatement implements Statement {
+    private final ExcelConnection connection;
+    private ResultSet currentResultSet;
+    private int updateCount = -1;
+    private boolean closed = false;
+
+    public ExcelStatement(ExcelConnection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public ResultSet executeQuery(String sql) throws SQLException {
+        checkClosed();
+        List<Map<String, Object>> data = connection.getSqlExecutor().executeQuery(sql);
+        // Récupérer les noms de colonnes depuis le premier élément
+        List<String> columns = null;
+        if (!data.isEmpty()) {
+            columns = List.copyOf(data.get(0).keySet());
+        } else {
+            // Pour le cas où la requête ne retourne rien (ex: CREATE), on retourne un ResultSet vide
+            columns = java.util.Collections.emptyList();
+        }
+        currentResultSet = new ExcelResultSet(data, columns);
+        return currentResultSet;
+    }
+
+    @Override
+    public int executeUpdate(String sql) throws SQLException {
+        checkClosed();
+        int res = connection.getSqlExecutor().executeUpdate(sql);
+        updateCount = res;
+        currentResultSet = null;
+        return res;
+    }
+
+    @Override
+    public boolean execute(String sql) throws SQLException {
+        // On essaie de deviner si c'est une requête SELECT
+        String trimmed = sql.trim().toUpperCase();
+        if (trimmed.startsWith("SELECT") || trimmed.startsWith("WITH")) {
+            executeQuery(sql);
+            return true;
+        } else {
+            executeUpdate(sql);
+            return false;
+        }
+    }
+
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        return currentResultSet;
+    }
+
+    @Override
+    public int getUpdateCount() throws SQLException {
+        return updateCount;
+    }
+
+    @Override
+    public void close() throws SQLException {
+        closed = true;
+        if (currentResultSet != null) currentResultSet.close();
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        return connection;
+    }
+
+    private void checkClosed() throws SQLException {
+        if (closed) throw new SQLException("Statement fermé");
+    }
+
+    // Autres méthodes vides ou non supportées
+    @Override public boolean isClosed() { return closed; }
+    @Override public void setMaxRows(int max) {}
+    @Override public int getMaxRows() { return 0; }
+    @Override public void setFetchSize(int rows) {}
+    @Override public int getFetchSize() { return 0; }
+    // ...
+}

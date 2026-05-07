@@ -1,0 +1,551 @@
+package com.exceljdbc.sql;
+
+import com.exceljdbc.table.TableManager;
+import net.sf.jsqlparser.expression.*;
+import net.sf.jsqlparser.expression.operators.arithmetic.*;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
+import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
+import net.sf.jsqlparser.expression.operators.relational.*;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.*;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.delete.Delete;
+import net.sf.jsqlparser.statement.drop.Drop;
+import net.sf.jsqlparser.statement.insert.Insert;
+import net.sf.jsqlparser.statement.select.*;
+import net.sf.jsqlparser.statement.update.Update;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class SQLExecutor {
+
+    private final TableManager tableManager;
+    private final String filePath;
+
+    public SQLExecutor(TableManager tableManager, String filePath) {
+        this.tableManager = tableManager;
+        this.filePath = filePath;
+    }
+
+    // ── Exécution des requêtes de lecture ────────────────────────────────
+    public List<Map<String, Object>> executeQuery(String sql) throws SQLException {
+        try {
+            Statement stmt = CCJSqlParserUtil.parse(sql);
+            if (stmt instanceof Select) {
+                return executeSelect((Select) stmt);
+            } else {
+                throw new SQLException("executeQuery ne supporte que les SELECT");
+            }
+        } catch (Exception e) {
+            throw new SQLException("Erreur lors de l'exécution de la requête", e);
+        }
+    }
+
+    // ── Exécution des requêtes de modification ───────────────────────────
+    public int executeUpdate(String sql) throws SQLException {
+        try {
+            Statement stmt = CCJSqlParserUtil.parse(sql);
+            if (stmt instanceof Insert) {
+                executeInsert((Insert) stmt);
+                return 1;
+            } else if (stmt instanceof Update) {
+                return executeUpdate((Update) stmt);
+            } else if (stmt instanceof Delete) {
+                return executeDelete((Delete) stmt);
+            } else if (stmt instanceof CreateTable) {
+                executeCreateTable((CreateTable) stmt);
+                return 0;
+            } else if (stmt instanceof Drop) {
+                executeDropTable((Drop) stmt);
+                return 0;
+            } else {
+                throw new SQLException("Opération non supportée : " + stmt.getClass().getSimpleName());
+            }
+        } catch (Exception e) {
+            throw new SQLException("Erreur SQL : " + e.getMessage(), e);
+        } finally {
+            // Sauvegarde automatique
+            try {
+                tableManager.save(filePath);
+            } catch (Exception ex) {
+                throw new SQLException("Impossible de sauvegarder le fichier Excel", ex);
+            }
+        }
+    }
+
+    // ── Logique SELECT ──────────────────────────────────────────────────
+    private List<Map<String, Object>> executeSelect(Select select) throws Exception {
+        PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
+
+        // 1. FROM
+        FromItem fromItem = plainSelect.getFromItem();
+        if (fromItem == null) throw new SQLException("FROM manquant");
+
+        List<Map<String, Object>> resultData;
+        if (fromItem instanceof Table) {
+            String tableName = ((Table) fromItem).getName();
+            resultData = tableManager.getTableData(tableName);
+            if (resultData == null) throw new SQLException("Table introuvable : " + tableName);
+            // Jointures
+            if (plainSelect.getJoins() != null) {
+                for (Join join : plainSelect.getJoins()) {
+                    resultData = applyJoin(resultData, tableName, join);
+                }
+            }
+        } else {
+            throw new SQLException("FROM doit être une table physique");
+        }
+
+        // 2. WHERE
+        if (plainSelect.getWhere() != null) {
+            resultData = resultData.stream()
+                    .filter(row -> {
+                        try {
+                            return evaluateExpression(plainSelect.getWhere(), row);
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // 3. GROUP BY & Agrégats
+        boolean hasAggregation = plainSelect.getSelectItems().stream()
+                .anyMatch(item -> item instanceof SelectExpressionItem &&
+                        ((SelectExpressionItem) item).getExpression() instanceof Function);
+        if (plainSelect.getGroupBy() != null || hasAggregation) {
+            resultData = applyGroupByAndAggregation(plainSelect, resultData);
+        }
+
+        // 4. HAVING
+        if (plainSelect.getHaving() != null) {
+            resultData = resultData.stream()
+                    .filter(row -> {
+                        try {
+                            return evaluateExpression(plainSelect.getHaving(), row);
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // 5. ORDER BY
+        if (plainSelect.getOrderByElements() != null) {
+            resultData.sort((a, b) -> {
+                for (OrderByElement orderBy : plainSelect.getOrderByElements()) {
+                    try {
+                        Object va = evaluateExpressionValue(orderBy.getExpression(), a);
+                        Object vb = evaluateExpressionValue(orderBy.getExpression(), b);
+                        int cmp = compare(va, vb);
+                        if (cmp != 0) return orderBy.isAsc() ? cmp : -cmp;
+                    } catch (Exception ignored) {}
+                }
+                return 0;
+            });
+        }
+
+        // 6. Projection des colonnes
+        // ---------- CORRECTION ICI ----------
+        // Détection de SELECT * : si au moins un SelectItem n'est pas un SelectExpressionItem,
+        // c'est un AllColumns (ou AllTableColumns).
+        boolean isSelectStar = plainSelect.getSelectItems().stream()
+                .anyMatch(item -> !(item instanceof SelectExpressionItem));
+        if (isSelectStar) {
+            return resultData;   // on garde toutes les colonnes
+        }
+
+        // Sinon, on projette uniquement les colonnes demandées
+        List<Map<String, Object>> projected = new ArrayList<>();
+        for (Map<String, Object> row : resultData) {
+            Map<String, Object> newRow = new LinkedHashMap<>();
+            for (SelectItem item : plainSelect.getSelectItems()) {
+                if (item instanceof SelectExpressionItem) {
+                    SelectExpressionItem sei = (SelectExpressionItem) item;
+                    String alias = sei.getAlias() != null ? sei.getAlias().getName() : sei.getExpression().toString();
+                    Object value;
+                    // Si l'expression est une fonction d'agrégat, la valeur a déjà été calculée
+                    // et placée dans la ligne sous le même alias.
+                    if (sei.getExpression() instanceof Function) {
+                        value = row.get(alias);
+                    } else {
+                        value = evaluateExpressionValue(sei.getExpression(), row);
+                    }
+                    newRow.put(alias, value);
+                }
+            }
+            projected.add(newRow);
+        }
+        return projected;
+    }
+
+    // ── Jointures ───────────────────────────────────────────────────────
+    private List<Map<String, Object>> applyJoin(List<Map<String, Object>> leftData,
+                                                String leftTableName, Join join) throws Exception {
+        FromItem rightItem = join.getRightItem();
+        if (!(rightItem instanceof Table))
+            throw new SQLException("Jointure uniquement avec des tables");
+        String rightTableName = ((Table) rightItem).getName();
+        List<Map<String, Object>> rightData = tableManager.getTableData(rightTableName);
+        if (rightData == null) throw new SQLException("Table droite introuvable : " + rightTableName);
+
+        Expression onExpr = join.getOnExpression();
+        List<Map<String, Object>> joined = new ArrayList<>();
+        Set<Integer> matchedRight = new HashSet<>();
+
+        for (Map<String, Object> leftRow : leftData) {
+            boolean matched = false;
+            for (int j = 0; j < rightData.size(); j++) {
+                Map<String, Object> rightRow = rightData.get(j);
+                Map<String, Object> merged = mergeRows(leftRow, rightRow, leftTableName, rightTableName);
+                if (onExpr == null || evaluateExpression(onExpr, merged)) {
+                    joined.add(merged);
+                    matched = true;
+                    matchedRight.add(j);
+                }
+            }
+            if (!matched && (join.isLeft() || join.isFull())) {
+                joined.add(mergeRows(leftRow, null, leftTableName, rightTableName));
+            }
+        }
+        if (join.isRight() || join.isFull()) {
+            for (int j = 0; j < rightData.size(); j++) {
+                if (!matchedRight.contains(j)) {
+                    joined.add(mergeRows(null, rightData.get(j), leftTableName, rightTableName));
+                }
+            }
+        }
+        return joined;
+    }
+
+    private Map<String, Object> mergeRows(Map<String, Object> left, Map<String, Object> right,
+                                          String leftAlias, String rightAlias) {
+        Map<String, Object> merged = new LinkedHashMap<>();
+        if (left != null) {
+            for (Map.Entry<String, Object> e : left.entrySet()) {
+                merged.put(leftAlias + "." + e.getKey(), e.getValue());
+                if (!merged.containsKey(e.getKey())) merged.put(e.getKey(), e.getValue());
+            }
+        }
+        if (right != null) {
+            for (Map.Entry<String, Object> e : right.entrySet()) {
+                merged.put(rightAlias + "." + e.getKey(), e.getValue());
+                if (!merged.containsKey(e.getKey())) merged.put(e.getKey(), e.getValue());
+            }
+        }
+        return merged;
+    }
+
+    // ── Évaluation d'expressions ────────────────────────────────────────
+    private boolean evaluateExpression(Expression expr, Map<String, Object> row) throws Exception {
+        if (expr instanceof ComparisonOperator) {
+            ComparisonOperator comp = (ComparisonOperator) expr;
+            Object leftVal = evaluateExpressionValue(comp.getLeftExpression(), row);
+            Object rightVal = evaluateExpressionValue(comp.getRightExpression(), row);
+            return compare(leftVal, rightVal, comp.getStringExpression());
+        } else if (expr instanceof AndExpression) {
+            AndExpression and = (AndExpression) expr;
+            return evaluateExpression(and.getLeftExpression(), row) && evaluateExpression(and.getRightExpression(), row);
+        } else if (expr instanceof OrExpression) {
+            OrExpression or = (OrExpression) expr;
+            return evaluateExpression(or.getLeftExpression(), row) || evaluateExpression(or.getRightExpression(), row);
+        } else if (expr instanceof IsNullExpression) {
+            IsNullExpression isNull = (IsNullExpression) expr;
+            Object val = evaluateExpressionValue(isNull.getLeftExpression(), row);
+            return isNull.isNot() ? val != null : val == null;
+        } else if (expr instanceof InExpression) {
+            InExpression in = (InExpression) expr;
+            Object val = evaluateExpressionValue(in.getLeftExpression(), row);
+            ItemsList rightItems = in.getRightItemsList();
+            if (rightItems instanceof ExpressionList) {
+                ExpressionList list = (ExpressionList) rightItems;
+                for (Expression itemExpr : list.getExpressions()) {
+                    Object itemVal = evaluateExpressionValue(itemExpr, row);
+                    if (val == null && itemVal == null) return true;
+                    if (val != null && val.equals(itemVal)) return true;
+                }
+                return in.isNot();
+            }
+            return false;
+        } else if (expr instanceof Parenthesis) {
+            return evaluateExpression(((Parenthesis) expr).getExpression(), row);
+        }
+        return false;  // expression non reconnue → false par sécurité
+    }
+
+    private Object evaluateExpressionValue(Expression expr, Map<String, Object> row) throws Exception {
+        if (expr instanceof Column) {
+            String colName = ((Column) expr).getFullyQualifiedName();
+            if (row.containsKey(colName)) return row.get(colName);
+            String shortName = ((Column) expr).getColumnName();
+            return row.get(shortName);
+        } else if (expr instanceof LongValue) {
+            return ((LongValue) expr).getValue();
+        } else if (expr instanceof DoubleValue) {
+            return ((DoubleValue) expr).getValue();
+        } else if (expr instanceof StringValue) {
+            return ((StringValue) expr).getValue();
+        } else if (expr instanceof DateValue) {
+            return ((DateValue) expr).getValue();
+        } else if (expr instanceof TimestampValue) {
+            return ((TimestampValue) expr).getValue();
+        } else if (expr instanceof NullValue) {
+            return null;
+        } else if (expr instanceof Parenthesis) {
+            return evaluateExpressionValue(((Parenthesis) expr).getExpression(), row);
+        } else if (expr instanceof Addition) {
+            Object l = evaluateExpressionValue(((Addition) expr).getLeftExpression(), row);
+            Object r = evaluateExpressionValue(((Addition) expr).getRightExpression(), row);
+            return arithmeticOp(l, r, '+');
+        } else if (expr instanceof Subtraction) {
+            Object l = evaluateExpressionValue(((Subtraction) expr).getLeftExpression(), row);
+            Object r = evaluateExpressionValue(((Subtraction) expr).getRightExpression(), row);
+            return arithmeticOp(l, r, '-');
+        } else if (expr instanceof Multiplication) {
+            Object l = evaluateExpressionValue(((Multiplication) expr).getLeftExpression(), row);
+            Object r = evaluateExpressionValue(((Multiplication) expr).getRightExpression(), row);
+            return arithmeticOp(l, r, '*');
+        } else if (expr instanceof Division) {
+            Object l = evaluateExpressionValue(((Division) expr).getLeftExpression(), row);
+            Object r = evaluateExpressionValue(((Division) expr).getRightExpression(), row);
+            return arithmeticOp(l, r, '/');
+        }
+        throw new UnsupportedOperationException("Expression non supportée : " + expr);
+    }
+
+    private Object arithmeticOp(Object left, Object right, char op) {
+        if (left instanceof Number && right instanceof Number) {
+            double l = ((Number) left).doubleValue();
+            double r = ((Number) right).doubleValue();
+            switch (op) {
+                case '+': return l + r;
+                case '-': return l - r;
+                case '*': return l * r;
+                case '/': return l / r;
+            }
+        }
+        return null;
+    }
+
+    // ── Comparaison ─────────────────────────────────────────────────────
+    private boolean compare(Object left, Object right, String operator) {
+        if (left == null && right == null) return operator.equals("=");
+        if (left == null || right == null) return false;
+        int cmp = compare(left, right);
+        switch (operator) {
+            case "=": return cmp == 0;
+            case "<>": case "!=": return cmp != 0;
+            case ">": return cmp > 0;
+            case "<": return cmp < 0;
+            case ">=": return cmp >= 0;
+            case "<=": return cmp <= 0;
+            default: return false;
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private int compare(Object a, Object b) {
+        if (a == null && b == null) return 0;
+        if (a == null) return -1;
+        if (b == null) return 1;
+        if (a instanceof Comparable && b instanceof Comparable) {
+            return ((Comparable) a).compareTo(b);
+        }
+        return a.toString().compareTo(b.toString());
+    }
+
+    // ── GROUP BY et Agrégats ────────────────────────────────────────────
+    private List<Map<String, Object>> applyGroupByAndAggregation(PlainSelect plainSelect,
+                                                                 List<Map<String, Object>> data) throws Exception {
+        GroupByElement groupBy = plainSelect.getGroupBy();
+        List<String> groupByCols = new ArrayList<>();
+        if (groupBy != null) {
+            for (Expression expr : groupBy.getGroupByExpressions()) {
+                if (expr instanceof Column) groupByCols.add(((Column) expr).getColumnName());
+                else groupByCols.add(expr.toString());
+            }
+        }
+
+        Map<List<Object>, List<Map<String, Object>>> groups = new LinkedHashMap<>();
+        for (Map<String, Object> row : data) {
+            List<Object> key = new ArrayList<>();
+            for (String col : groupByCols) key.add(row.getOrDefault(col, null));
+            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(row);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map.Entry<List<Object>, List<Map<String, Object>>> entry : groups.entrySet()) {
+            Map<String, Object> groupedRow = new LinkedHashMap<>();
+            for (int i = 0; i < groupByCols.size(); i++) {
+                groupedRow.put(groupByCols.get(i), entry.getKey().get(i));
+            }
+            // Calcul des agrégats demandés dans le SELECT
+            for (SelectItem item : plainSelect.getSelectItems()) {
+                if (item instanceof SelectExpressionItem) {
+                    SelectExpressionItem sei = (SelectExpressionItem) item;
+                    if (sei.getExpression() instanceof Function) {
+                        Function func = (Function) sei.getExpression();
+                        String funcName = func.getName().toUpperCase();
+                        ItemsList params = func.getParameters();
+                        String alias = sei.getAlias() != null ? sei.getAlias().getName() : func.toString();
+                        Object aggValue = computeAggregate(funcName, params, entry.getValue());
+                        groupedRow.put(alias, aggValue);
+                    }
+                }
+            }
+            result.add(groupedRow);
+        }
+        return result;
+    }
+
+    private Object computeAggregate(String funcName, ItemsList params,
+                                    List<Map<String, Object>> rows) throws Exception {
+        switch (funcName) {
+            case "COUNT":
+                if (params == null) return (long) rows.size();
+                if (params instanceof ExpressionList) {
+                    ExpressionList exprList = (ExpressionList) params;
+                    if (exprList.getExpressions().isEmpty()) return (long) rows.size();
+                    Expression countExpr = exprList.getExpressions().get(0);
+                    long count = 0;
+                    for (Map<String, Object> row : rows)
+                        if (evaluateExpressionValue(countExpr, row) != null) count++;
+                    return count;
+                }
+                throw new SQLException("Paramètres de COUNT non supportés");
+            case "SUM": {
+                double sum = 0;
+                Expression expr = extractSingleExpr(params);
+                for (Map<String, Object> row : rows) {
+                    Object val = evaluateExpressionValue(expr, row);
+                    if (val instanceof Number) sum += ((Number) val).doubleValue();
+                }
+                return sum;
+            }
+            case "AVG": {
+                double sum = 0;
+                int cnt = 0;
+                Expression expr = extractSingleExpr(params);
+                for (Map<String, Object> row : rows) {
+                    Object val = evaluateExpressionValue(expr, row);
+                    if (val instanceof Number) {
+                        sum += ((Number) val).doubleValue();
+                        cnt++;
+                    }
+                }
+                return cnt > 0 ? sum / cnt : 0.0;
+            }
+            case "MIN": {
+                Expression expr = extractSingleExpr(params);
+                Comparable min = null;
+                for (Map<String, Object> row : rows) {
+                    Object val = evaluateExpressionValue(expr, row);
+                    if (val instanceof Comparable) {
+                        Comparable c = (Comparable) val;
+                        if (min == null || c.compareTo(min) < 0) min = c;
+                    }
+                }
+                return min;
+            }
+            case "MAX": {
+                Expression expr = extractSingleExpr(params);
+                Comparable max = null;
+                for (Map<String, Object> row : rows) {
+                    Object val = evaluateExpressionValue(expr, row);
+                    if (val instanceof Comparable) {
+                        Comparable c = (Comparable) val;
+                        if (max == null || c.compareTo(max) > 0) max = c;
+                    }
+                }
+                return max;
+            }
+            default:
+                throw new UnsupportedOperationException("Agrégat non supporté : " + funcName);
+        }
+    }
+
+    private Expression extractSingleExpr(ItemsList params) throws SQLException {
+        if (!(params instanceof ExpressionList) || ((ExpressionList) params).getExpressions().isEmpty())
+            throw new SQLException("Fonction d'agrégat requiert une expression");
+        return ((ExpressionList) params).getExpressions().get(0);
+    }
+
+    // ── INSERT ──────────────────────────────────────────────────────────
+    private void executeInsert(Insert insert) throws Exception {
+        String tableName = insert.getTable().getName();
+        List<String> columns = insert.getColumns().stream()
+                .map(Column::getColumnName).collect(Collectors.toList());
+        ItemsList items = insert.getItemsList();
+        if (!(items instanceof ExpressionList)) throw new SQLException("INSERT avec sous-requête non supporté");
+        ExpressionList values = (ExpressionList) items;
+        Map<String, Object> row = new LinkedHashMap<>();
+        for (int i = 0; i < columns.size(); i++) {
+            row.put(columns.get(i), evaluateConstantExpression(values.getExpressions().get(i)));
+        }
+        tableManager.insertRow(tableName, row);
+    }
+
+    // ── UPDATE ──────────────────────────────────────────────────────────
+    private int executeUpdate(Update update) throws Exception {
+        String tableName = update.getTable().getName();
+        List<Map<String, Object>> data = tableManager.getTableData(tableName);
+        if (data == null) throw new SQLException("Table inexistante : " + tableName);
+        int count = 0;
+        for (Map<String, Object> row : data) {
+            if (update.getWhere() == null || evaluateExpression(update.getWhere(), row)) {
+                for (UpdateSet set : update.getUpdateSets()) {
+                    String col = set.getColumns().get(0).getColumnName();
+                    row.put(col, evaluateConstantExpression(set.getExpressions().get(0)));
+                }
+                count++;
+            }
+        }
+        tableManager.updateRows(tableName, data);
+        return count;
+    }
+
+    // ── DELETE ──────────────────────────────────────────────────────────
+    private int executeDelete(Delete delete) throws Exception {
+        String tableName = delete.getTable().getName();
+        List<Map<String, Object>> data = tableManager.getTableData(tableName);
+        if (data == null) throw new SQLException("Table inexistante");
+        List<Map<String, Object>> newData = new ArrayList<>();
+        int count = 0;
+        for (Map<String, Object> row : data) {
+            if (delete.getWhere() != null && evaluateExpression(delete.getWhere(), row)) {
+                count++;
+            } else {
+                newData.add(row);
+            }
+        }
+        tableManager.updateRows(tableName, newData);
+        return count;
+    }
+
+    // ── CREATE / DROP TABLE ─────────────────────────────────────────────
+    private void executeCreateTable(CreateTable create) {
+        List<String> defs = create.getColumnDefinitions().stream()
+                .map(cd -> cd.getColumnName() + " " + cd.getColDataType().getDataType())
+                .collect(Collectors.toList());
+        tableManager.createTable(create.getTable().getName(), defs);
+    }
+
+    private void executeDropTable(Drop drop) {
+        tableManager.dropTable(drop.getName().getName());
+    }
+
+    // ── Évaluation constante (pour INSERT/UPDATE) ───────────────────────
+    private Object evaluateConstantExpression(Expression expr) throws Exception {
+        if (expr instanceof StringValue) return ((StringValue) expr).getValue();
+        if (expr instanceof LongValue) return ((LongValue) expr).getValue();
+        if (expr instanceof DoubleValue) return ((DoubleValue) expr).getValue();
+        if (expr instanceof DateValue) return ((DateValue) expr).getValue();
+        if (expr instanceof TimestampValue) return ((TimestampValue) expr).getValue();
+        if (expr instanceof NullValue) return null;
+        throw new SQLException("Valeur constante non supportée : " + expr);
+    }
+}

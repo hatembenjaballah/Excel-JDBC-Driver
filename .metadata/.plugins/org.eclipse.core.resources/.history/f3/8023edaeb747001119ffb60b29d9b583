@@ -1,0 +1,38 @@
+package com.exceljdbc;
+
+import java.sql.*;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+public class ExcelDriver implements Driver {
+    static {
+        try {
+            DriverManager.registerDriver(new ExcelDriver());
+        } catch (SQLException e) {
+            throw new RuntimeException("Impossible d'enregistrer le driver Excel", e);
+        }
+    }
+
+    @Override
+    public Connection connect(String url, Properties info) throws SQLException {
+        if (!acceptsURL(url)) return null;
+        ExcelConnectionURL parsed = new ExcelConnectionURL(url);
+        return new ExcelConnection(parsed.getFilePath(), info);
+    }
+
+    @Override
+    public boolean acceptsURL(String url) {
+        return url != null && url.startsWith("jdbc:excel:");
+    }
+
+    @Override
+    public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) { return new DriverPropertyInfo[0]; }
+    @Override
+    public int getMajorVersion() { return 1; }
+    @Override
+    public int getMinorVersion() { return 0; }
+    @Override
+    public boolean jdbcCompliant() { return false; }
+    @Override
+    public Logger getParentLogger() { return Logger.getLogger("exceljdbc"); }
+}

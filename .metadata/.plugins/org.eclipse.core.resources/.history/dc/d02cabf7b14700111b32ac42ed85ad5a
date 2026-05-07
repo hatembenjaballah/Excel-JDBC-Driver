@@ -1,0 +1,89 @@
+package com.exceljdbc;
+
+import com.exceljdbc.table.TableManager;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.io.*;
+import java.sql.*;
+import java.util.Properties;
+
+public class ExcelConnection implements Connection {
+    private final String filePath;
+    private Workbook workbook;
+    private final Properties info;
+    private boolean closed = false;
+    private final TableManager tableManager;
+    private final SQLExecutor sqlExecutor;
+
+    public ExcelConnection(String filePath, Properties info) throws SQLException {
+        this.filePath = filePath;
+        this.info = info;
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            if (filePath.endsWith(".xlsx")) {
+                workbook = new XSSFWorkbook(fis);
+            } else if (filePath.endsWith(".xls")) {
+                workbook = new HSSFWorkbook(fis);
+            } else {
+                throw new SQLException("Format de fichier non supporté : " + filePath);
+            }
+        } catch (IOException e) {
+            throw new SQLException("Impossible d'ouvrir le fichier Excel : " + filePath, e);
+        }
+        tableManager = new TableManager(workbook);
+        sqlExecutor = new SQLExecutor(tableManager, filePath);
+    }
+
+    public SQLExecutor getSqlExecutor() { return sqlExecutor; }
+    public TableManager getTableManager() { return tableManager; }
+
+    @Override
+    public Statement createStatement() throws SQLException {
+        checkClosed();
+        return new ExcelStatement(this);
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        checkClosed();
+        return new ExcelPreparedStatement(this, sql);
+    }
+
+    @Override
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return new ExcelDatabaseMetaData(this);
+    }
+
+    @Override
+    public void close() throws SQLException {
+        try {
+            if (workbook != null) workbook.close();
+        } catch (IOException e) {
+            throw new SQLException(e);
+        }
+        closed = true;
+    }
+
+    private void checkClosed() throws SQLException {
+        if (closed) throw new SQLException("Connexion fermée.");
+    }
+
+    // Méthodes obligatoires (simplifiées)
+    @Override public boolean isClosed() { return closed; }
+    @Override public <T> T unwrap(Class<T> iface) { return null; }
+    @Override public boolean isWrapperFor(Class<?> iface) { return false; }
+    @Override public void setAutoCommit(boolean autoCommit) {}
+    @Override public boolean getAutoCommit() { return true; }
+    @Override public void commit() {}
+    @Override public void rollback() {}
+    @Override public SQLWarning getWarnings() { return null; }
+    @Override public void clearWarnings() {}
+    @Override public String getCatalog() { return null; }
+    @Override public void setCatalog(String catalog) {}
+    @Override public int getTransactionIsolation() { return Connection.TRANSACTION_NONE; }
+    @Override public void setTransactionIsolation(int level) {}
+    @Override public Array createArrayOf(String typeName, Object[] elements) { throw new UnsupportedOperationException(); }
+    // etc...
+}

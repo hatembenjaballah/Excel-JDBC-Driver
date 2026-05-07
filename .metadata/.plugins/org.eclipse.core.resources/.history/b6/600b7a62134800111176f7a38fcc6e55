@@ -1,0 +1,328 @@
+package com.exceljdbc;
+
+import java.sql.*;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Implémentation de {@link Statement} pour le driver Excel.
+ * <p>
+ * Un {@code ExcelStatement} est créé par {@link ExcelConnection#createStatement()}.
+ * Il permet d'exécuter des requêtes SQL (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP…)
+ * et de récupérer soit un {@link ResultSet} (pour les SELECT), soit un compteur
+ * de lignes modifiées (pour les autres).
+ * </p>
+ * <p>
+ * Cette classe est également la classe parente de {@link ExcelPreparedStatement}.
+ * Les méthodes d'exécution y sont centralisées afin de pouvoir être réutilisées
+ * après substitution des paramètres.
+ * </p>
+ */
+public class ExcelStatement implements Statement {
+
+    /** La connexion propriétaire, utilisée pour accéder au {@link SQLExecutor}. */
+    private final ExcelConnection connection;
+
+    /** Le dernier ResultSet produit par une exécution. */
+    private ResultSet currentResultSet;
+
+    /** Le nombre de lignes affectées par la dernière mise à jour (−1 si SELECT). */
+    private int updateCount = -1;
+
+    /** Indique si ce Statement est fermé. */
+    private boolean closed = false;
+
+    // Paramètres optionnels (gérés mais non implémentés en détail)
+    private int maxRows = 0;
+    private int fetchSize = 0;
+    private int queryTimeout = 0;
+
+    /**
+     * Construit un Statement attaché à la connexion donnée.
+     *
+     * @param connection la connexion Excel associée
+     */
+    public ExcelStatement(ExcelConnection connection) {
+        this.connection = connection;
+    }
+
+    // ── Méthodes d'exécution centrales ─────────────────────────────────────
+
+    /**
+     * Exécute une requête SELECT et retourne le résultat sous forme de {@link ExcelResultSet}.
+     * Les colonnes du ResultSet sont déduites des données retournées.
+     *
+     * @param sql la requête SELECT à exécuter
+     * @return un ResultSet contenant les lignes produites
+     * @throws SQLException si la requête n'est pas un SELECT ou si une erreur survient
+     */
+    @Override
+    public ResultSet executeQuery(String sql) throws SQLException {
+        checkClosed();
+        closeCurrentResultSet(); // Ferme le ResultSet précédent s'il existe
+
+        // Délégation de l'analyse et de l'exécution au SQLExecutor
+        List<Map<String, Object>> data = connection.getSqlExecutor().executeQuery(sql);
+
+        // Extraction des noms de colonnes à partir de la première ligne (ou liste vide)
+        List<String> columns;
+        if (!data.isEmpty()) {
+            columns = List.copyOf(data.get(0).keySet());
+        } else {
+            columns = java.util.Collections.emptyList();
+        }
+
+        currentResultSet = new ExcelResultSet(data, columns);
+        updateCount = -1; // Pas une mise à jour
+        return currentResultSet;
+    }
+
+    /**
+     * Exécute une requête d'action (INSERT, UPDATE, DELETE, CREATE, DROP).
+     *
+     * @param sql la requête SQL à exécuter
+     * @return le nombre de lignes affectées (ou 0 pour CREATE/DROP)
+     * @throws SQLException si la requête n'est pas une mise à jour ou si une erreur survient
+     */
+    @Override
+    public int executeUpdate(String sql) throws SQLException {
+        checkClosed();
+        closeCurrentResultSet();
+
+        int result = connection.getSqlExecutor().executeUpdate(sql);
+        updateCount = result;
+        currentResultSet = null;
+        return result;
+    }
+
+    /**
+     * Exécute une requête dont on ne connaît pas à l'avance le type.
+     * <p>
+     * La méthode retourne {@code true} si le résultat est un {@link ResultSet} (SELECT),
+     * {@code false} si c'est un compte de mise à jour.
+     * </p>
+     */
+    @Override
+    public boolean execute(String sql) throws SQLException {
+        checkClosed();
+        String trimmed = sql.trim().toUpperCase();
+        if (trimmed.startsWith("SELECT") || trimmed.startsWith("WITH")) {
+            executeQuery(sql);
+            return true; // Un ResultSet a été produit
+        } else {
+            executeUpdate(sql);
+            return false; // C'est un compte de mise à jour
+        }
+    }
+
+    // ── Gestion du ResultSet courant et du compteur ───────────────────────
+
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        return currentResultSet;
+    }
+
+    @Override
+    public int getUpdateCount() throws SQLException {
+        return updateCount;
+    }
+
+    /**
+     * Passe au prochain résultat. Le driver ne supporte qu'un seul résultat.
+     * @return {@code false} car il n'y a jamais d'autre résultat.
+     */
+    @Override
+    public boolean getMoreResults() throws SQLException {
+        closeCurrentResultSet();
+        updateCount = -1;
+        return false;
+    }
+
+    /**
+     * Ferme le ResultSet courant s'il est ouvert, et libère la référence.
+     */
+    private void closeCurrentResultSet() throws SQLException {
+        if (currentResultSet != null && !currentResultSet.isClosed()) {
+            currentResultSet.close();
+        }
+        currentResultSet = null;
+    }
+
+    // ── Fermeture ─────────────────────────────────────────────────────────
+
+    @Override
+    public void close() throws SQLException {
+        if (closed) return;
+        closeCurrentResultSet();
+        closed = true;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+
+    private void checkClosed() throws SQLException {
+        if (closed) {
+            throw new SQLException("Statement fermé");
+        }
+    }
+
+    /**
+     * Retourne la connexion qui a créé ce Statement.
+     */
+    @Override
+    public Connection getConnection() throws SQLException {
+        return connection;
+    }
+
+    // ── Paramètres de configuration (support minimal) ─────────────────────
+
+    @Override
+    public void setMaxRows(int max) throws SQLException {
+        this.maxRows = max;
+        // L'effet pourrait être appliqué dans ExcelResultSet, non implémenté pour l'instant
+    }
+
+    @Override
+    public int getMaxRows() {
+        return maxRows;
+    }
+
+    @Override
+    public void setFetchSize(int rows) throws SQLException {
+        this.fetchSize = rows;
+    }
+
+    @Override
+    public int getFetchSize() {
+        return fetchSize;
+    }
+
+    @Override
+    public void setFetchDirection(int direction) throws SQLException {
+        if (direction != ResultSet.FETCH_FORWARD) {
+            throw new SQLException("Seule la direction FETCH_FORWARD est supportée");
+        }
+    }
+
+    @Override
+    public int getFetchDirection() {
+        return ResultSet.FETCH_FORWARD;
+    }
+
+    @Override
+    public void setQueryTimeout(int seconds) throws SQLException {
+        this.queryTimeout = seconds;
+        // Timeout non implémenté
+    }
+
+    @Override
+    public int getQueryTimeout() {
+        return queryTimeout;
+    }
+
+    // ── Méthodes liées au batch (non supportées) ─────────────────────────
+
+    @Override
+    public void addBatch(String sql) throws SQLException {
+        throw new SQLFeatureNotSupportedException("Batch non supporté");
+    }
+
+    @Override
+    public void clearBatch() throws SQLException {
+    }
+
+    @Override
+    public int[] executeBatch() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Batch non supporté");
+    }
+
+    // ── Méthodes retournant des valeurs par défaut ───────────────────────
+
+    @Override
+    public int getMaxFieldSize() { return 0; }
+
+    @Override
+    public void setMaxFieldSize(int max) { }
+
+    @Override
+    public void setEscapeProcessing(boolean enable) { }
+
+    @Override
+    public SQLWarning getWarnings() { return null; }
+
+    @Override
+    public void clearWarnings() { }
+
+    @Override
+    public void setCursorName(String name) { }
+
+    @Override
+    public int getResultSetType() { return ResultSet.TYPE_FORWARD_ONLY; }
+
+    @Override
+    public int getResultSetConcurrency() { return ResultSet.CONCUR_READ_ONLY; }
+
+    @Override
+    public int getResultSetHoldability() { return ResultSet.CLOSE_CURSORS_AT_COMMIT; }
+
+    @Override
+    public boolean isPoolable() { return false; }
+
+    @Override
+    public void setPoolable(boolean poolable) { }
+
+    // Méthodes de wrapper
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new SQLException("Non wrapper");
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) {
+        return false;
+    }
+
+    // Méthodes pour les clés auto-générées (non supportées)
+    @Override
+    public boolean execute(String sql, int autoGeneratedKeys) throws SQLException {
+        return execute(sql);
+    }
+
+    @Override
+    public boolean execute(String sql, int[] columnIndexes) throws SQLException {
+        return execute(sql);
+    }
+
+    @Override
+    public boolean execute(String sql, String[] columnNames) throws SQLException {
+        return execute(sql);
+    }
+
+    @Override
+    public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException {
+        return executeUpdate(sql);
+    }
+
+    @Override
+    public int executeUpdate(String sql, int[] columnIndexes) throws SQLException {
+        return executeUpdate(sql);
+    }
+
+    @Override
+    public int executeUpdate(String sql, String[] columnNames) throws SQLException {
+        return executeUpdate(sql);
+    }
+
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        throw new SQLFeatureNotSupportedException("Clés générées non supportées");
+    }
+
+    // Méthode de clôture sur fermeture de la connexion
+    public void closeOnCompletion() { /* sans effet */ }
+
+    @Override
+    public boolean isCloseOnCompletion() { return false; }
+}

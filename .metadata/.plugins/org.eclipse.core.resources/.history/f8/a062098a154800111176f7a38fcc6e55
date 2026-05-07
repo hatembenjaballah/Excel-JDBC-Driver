@@ -1,0 +1,431 @@
+package com.exceljdbc;
+
+import com.exceljdbc.sql.SQLExecutor;
+import com.exceljdbc.table.TableManager;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.io.*;
+import java.sql.*;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
+
+/**
+ * Implémentation JDBC de {@link Connection} pour un fichier Excel.
+ * <p>
+ * Une connexion est associée à un seul fichier Excel. Ce fichier est ouvert en
+ * mode lecture/écriture via Apache POI. Les feuilles du classeur sont
+ * considérées comme des tables de la base de données.
+ * </p>
+ * <p>
+ * La connexion délègue l'exécution des requêtes SQL à un {@link SQLExecutor}
+ * et la manipulation des feuilles à un {@link TableManager}.
+ * </p>
+ */
+public class ExcelConnection implements Connection {
+
+    // Chemin du fichier Excel (ex: "C:/data.xlsx")
+    private final String filePath;
+
+    // Objet Workbook POI représentant le fichier Excel ouvert
+    private Workbook workbook;
+
+    // Propriétés de connexion (peuvent contenir des informations supplémentaires)
+    private final Properties info;
+
+    // Indicateur de fermeture
+    private boolean closed = false;
+
+    // Gestionnaire de tables (feuilles) : lecture, écriture, création, suppression
+    private final TableManager tableManager;
+
+    // Moteur d'exécution SQL : parse et exécute les requêtes sur les données en mémoire
+    private final SQLExecutor sqlExecutor;
+
+    /**
+     * Constructeur appelé par le Driver lors du {@link Driver#connect(String, Properties)}.
+     * 
+     * @param filePath chemin absolu ou relatif vers le fichier .xlsx ou .xls
+     * @param info     propriétés de connexion (non utilisées intensivement ici)
+     * @throws SQLException si le fichier est introuvable, illisible ou d'un format non supporté
+     */
+    public ExcelConnection(String filePath, Properties info) throws SQLException {
+        this.filePath = filePath;
+        this.info = info;
+
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            // Détection du format en fonction de l'extension
+            if (filePath.endsWith(".xlsx")) {
+                workbook = new XSSFWorkbook(fis);   // Format Office Open XML (2007+)
+            } else if (filePath.endsWith(".xls")) {
+                workbook = new HSSFWorkbook(fis);   // Ancien format binaire (97-2003)
+            } else {
+                throw new SQLException("Format de fichier non supporté : " + filePath);
+            }
+        } catch (IOException e) {
+            throw new SQLException("Impossible d'ouvrir le fichier Excel : " + filePath, e);
+        }
+
+        // Initialiser les modules internes
+        tableManager = new TableManager(workbook);
+        sqlExecutor = new SQLExecutor(tableManager, filePath);
+    }
+    public String getFilePath() {
+		return this.filePath;
+	}
+    /**
+     * Fournit l'exécuteur SQL pour que les Statements puissent déléguer les requêtes.
+     */
+    public SQLExecutor getSqlExecutor() {
+        return sqlExecutor;
+    }
+
+    /**
+     * Fournit le gestionnaire de tables pour les métadonnées ou opérations directes.
+     */
+    public TableManager getTableManager() {
+        return tableManager;
+    }
+
+    /**
+     * Crée un Statement standard (non préparé) lié à cette connexion.
+     */
+    @Override
+    public Statement createStatement() throws SQLException {
+    	close();
+        return new ExcelStatement(this);
+    }
+
+    /**
+     * Crée un PreparedStatement à partir d'une requête SQL avec paramètres.
+     */
+    @Override
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+    	close();
+        return new ExcelPreparedStatement(this, sql);
+    }
+
+    /**
+     * Retourne les métadonnées de la "base de données" (c'est-à-dire du fichier Excel).
+     */
+    @Override
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return new ExcelDatabaseMetaData(this);
+    }
+
+    /**
+     * Ferme la connexion et libère les ressources associées au fichier.
+     * La sauvegarde éventuelle est déjà faite par le SQLExecutor après chaque mise à jour.
+     */
+    @Override
+    public void close() throws SQLException {
+        try {
+            if (workbook != null) {
+                workbook.close();
+            }
+        } catch (IOException e) {
+            throw new SQLException("Erreur lors de la fermeture du fichier Excel", e);
+        }
+        closed = true;
+    }
+
+    // ── Méthodes obligatoires de l'interface Connection ──────────────────────
+    // Seules les plus importantes sont implémentées ; les autres retournent des
+    // valeurs par défaut conformes à la spécification JDBC.
+
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) {
+        return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) {
+        return false;
+    }
+
+    @Override
+    public void setAutoCommit(boolean autoCommit) {
+        // Pas de transaction : Excel est toujours en auto-commit
+    }
+
+    @Override
+    public boolean getAutoCommit() {
+        return true;
+    }
+
+    @Override
+    public void commit() {
+        // Pas de transaction
+    }
+
+    @Override
+    public void rollback() {
+        // Pas de transaction
+    }
+
+    @Override
+    public SQLWarning getWarnings() {
+        return null;
+    }
+
+    @Override
+    public void clearWarnings() {
+    }
+
+    @Override
+    public String getCatalog() {
+        return null;
+    }
+
+    @Override
+    public void setCatalog(String catalog) {
+    }
+
+    @Override
+    public int getTransactionIsolation() {
+        return Connection.TRANSACTION_NONE;
+    }
+
+    @Override
+    public void setTransactionIsolation(int level) {
+    }
+
+    @Override
+    public Array createArrayOf(String typeName, Object[] elements) {
+        throw new UnsupportedOperationException("createArrayOf non supporté");
+    }
+
+	@Override
+	public CallableStatement prepareCall(String sql) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String nativeSQL(String sql) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isReadOnly() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Class<?>> getTypeMap() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setHoldability(int holdability) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getHoldability() throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Savepoint setSavepoint() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Savepoint setSavepoint(String name) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void rollback(Savepoint savepoint) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
+			int resultSetHoldability) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+			int resultSetHoldability) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Clob createClob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Blob createBlob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NClob createNClob() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SQLXML createSQLXML() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isValid(int timeout) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setClientInfo(String name, String value) throws SQLClientInfoException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setClientInfo(Properties properties) throws SQLClientInfoException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getClientInfo(String name) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Properties getClientInfo() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setSchema(String schema) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getSchema() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void abort(Executor executor) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getNetworkTimeout() throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	
+
+    // ... d'autres méthodes de l'interface peuvent être ajoutées avec des retours par défaut.
+    // Pour un driver complet, il faudrait toutes les implémenter, mais cela dépasse
+    // le cadre de cette démonstration.
+}

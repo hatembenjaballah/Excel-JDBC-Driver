@@ -1,0 +1,115 @@
+package com.exceljdbc;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.*;
+import java.util.*;
+
+public class ExcelResultSet implements ResultSet {
+    private final List<Map<String, Object>> rows;
+    private int cursor = -1;
+    private boolean closed = false;
+    private final ResultSetMetaData metaData;
+    private boolean wasNull = false;
+
+    public ExcelResultSet(List<Map<String, Object>> rows, List<String> columns) throws SQLException {
+        this.rows = rows != null ? rows : new ArrayList<>();
+        this.metaData = new ExcelResultSetMetaData(columns);
+    }
+
+    @Override
+    public boolean next() throws SQLException {
+        if (closed) throw new SQLException("ResultSet fermé");
+        cursor++;
+        return cursor < rows.size();
+    }
+
+    @Override
+    public String getString(int columnIndex) throws SQLException {
+        Object val = getValue(columnIndex);
+        wasNull = (val == null);
+        return val != null ? val.toString() : null;
+    }
+
+    @Override
+    public String getString(String columnLabel) throws SQLException {
+        return getString(findColumn(columnLabel));
+    }
+
+    @Override
+    public int getInt(int columnIndex) throws SQLException {
+        Object val = getValue(columnIndex);
+        wasNull = (val == null);
+        if (val instanceof Number) return ((Number) val).intValue();
+        if (val instanceof String) return Integer.parseInt((String) val);
+        return 0;
+    }
+
+    @Override
+    public long getLong(int columnIndex) throws SQLException {
+        Object val = getValue(columnIndex);
+        wasNull = (val == null);
+        if (val instanceof Number) return ((Number) val).longValue();
+        if (val instanceof String) return Long.parseLong((String) val);
+        return 0;
+    }
+
+    @Override
+    public double getDouble(int columnIndex) throws SQLException {
+        Object val = getValue(columnIndex);
+        wasNull = (val == null);
+        if (val instanceof Number) return ((Number) val).doubleValue();
+        if (val instanceof String) return Double.parseDouble((String) val);
+        return 0.0;
+    }
+
+    @Override
+    public Date getDate(int columnIndex) throws SQLException {
+        Object val = getValue(columnIndex);
+        wasNull = (val == null);
+        if (val instanceof java.util.Date) return new java.sql.Date(((java.util.Date) val).getTime());
+        return null;
+    }
+
+    @Override
+    public boolean getBoolean(int columnIndex) throws SQLException {
+        Object val = getValue(columnIndex);
+        wasNull = (val == null);
+        if (val instanceof Boolean) return (Boolean) val;
+        if (val instanceof String) return Boolean.parseBoolean((String) val);
+        return false;
+    }
+
+    private Object getValue(int columnIndex) throws SQLException {
+        if (cursor < 0 || cursor >= rows.size()) throw new SQLException("Curseur invalide");
+        Map<String, Object> row = rows.get(cursor);
+        String colName = metaData.getColumnName(columnIndex);
+        return row.get(colName);
+    }
+
+    @Override
+    public int findColumn(String columnLabel) throws SQLException {
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            if (metaData.getColumnName(i).equalsIgnoreCase(columnLabel)) return i;
+        }
+        throw new SQLException("Colonne introuvable : " + columnLabel);
+    }
+
+    @Override
+    public boolean wasNull() { return wasNull; }
+
+    @Override
+    public ResultSetMetaData getMetaData() { return metaData; }
+
+    @Override
+    public void close() { closed = true; }
+
+    @Override
+    public boolean isClosed() { return closed; }
+
+    // Méthodes non supportées
+    @Override public BigDecimal getBigDecimal(int columnIndex, int scale) { throw new UnsupportedOperationException(); }
+    @Override public InputStream getAsciiStream(int columnIndex) { throw new UnsupportedOperationException(); }
+    // ... etc.
+}

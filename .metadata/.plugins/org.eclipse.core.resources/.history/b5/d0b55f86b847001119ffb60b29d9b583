@@ -1,0 +1,86 @@
+package com.exceljdbc;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class ExcelPreparedStatement extends ExcelStatement implements PreparedStatement {
+    private final String sql;
+    private final List<Object> parameters = new ArrayList<>();
+
+    public ExcelPreparedStatement(ExcelConnection connection, String sql) throws SQLException {
+        super(connection);
+        this.sql = sql;
+    }
+
+    @Override
+    public void setString(int parameterIndex, String x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    @Override
+    public void setInt(int parameterIndex, int x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    @Override
+    public void setLong(int parameterIndex, long x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    @Override
+    public void setDouble(int parameterIndex, double x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    @Override
+    public void setBoolean(int parameterIndex, boolean x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    @Override
+    public void setDate(int parameterIndex, Date x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    @Override
+    public void setObject(int parameterIndex, Object x) throws SQLException {
+        setParam(parameterIndex, x);
+    }
+
+    private void setParam(int index, Object value) {
+        while (parameters.size() < index) parameters.add(null);
+        parameters.set(index - 1, value);
+    }
+
+    @Override
+    public ResultSet executeQuery() throws SQLException {
+        return executeQuery(substituteParameters());
+    }
+
+    @Override
+    public int executeUpdate() throws SQLException {
+        return executeUpdate(substituteParameters());
+    }
+
+    @Override
+    public boolean execute() throws SQLException {
+        return execute(substituteParameters());
+    }
+
+    private String substituteParameters() {
+        String result = sql;
+        for (int i = 0; i < parameters.size(); i++) {
+            Object param = parameters.get(i);
+            String replacement = param == null ? "NULL" : (param instanceof String ? "'" + param + "'" : param.toString());
+            result = result.replaceFirst("\\?", replacement);
+        }
+        return result;
+    }
+
+    // Méthodes non implémentées
+    @Override public void addBatch() {}
+    @Override public void clearParameters() {} 
+    // ... etc.
+}

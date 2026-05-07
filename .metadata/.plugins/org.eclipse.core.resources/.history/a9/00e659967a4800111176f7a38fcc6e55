@@ -1,0 +1,283 @@
+package com.exceljdbc.table;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+/**
+ * Gestionnaire de tables pour le driver JDBC Excel.
+ * <p>
+ * Une "table" correspond à une feuille (Sheet) du classeur.
+ * La première ligne de chaque feuille est l'en-tête : elle contient les noms
+ * des colonnes. Les lignes suivantes sont les données.
+ * </p>
+ * <p>
+ * Ce gestionnaire lit et écrit les données en mémoire via Apache POI,
+ * puis sauvegarde le classeur dans le fichier source.
+ * </p>
+ */
+public class TableManager {
+
+    private final Workbook workbook;
+    private final String filePath; // Chemin du fichier Excel pour la sauvegarde
+
+    /**
+     * Construit un gestionnaire de tables.
+     *
+     * @param workbook le classeur Excel ouvert (XSSFWorkbook ou HSSFWorkbook)
+     * @param filePath le chemin du fichier (utilisé pour sauvegarder)
+     */
+    public TableManager(Workbook workbook, String filePath) {
+        this.workbook = workbook;
+        this.filePath = filePath;
+    }
+
+    // ── Lecture d'une table (feuille) ─────────────────────────────────────
+
+    /**
+     * Lit toutes les lignes d'une feuille. La première ligne est traitée comme
+     * en-tête. Chaque ligne suivante est convertie en une {@code Map} colonne → valeur.
+     *
+     * @param tableName nom de la feuille
+     * @return liste des lignes, ou {@code null} si la feuille n'existe pas
+     */
+    public List<Map<String, Object>> getTableData(String tableName) {
+        Sheet sheet = workbook.getSheet(tableName);
+        if (sheet == null) return null;
+
+        List<Map<String, Object>> rows = new ArrayList<>();
+        Iterator<Row> rowIterator = sheet.iterator();
+        if (!rowIterator.hasNext()) return rows; // feuille vide
+
+        // 1. Lire la ligne d'en-tête (noms des colonnes)
+        Row headerRow = rowIterator.next();
+        List<String> columns = new ArrayList<>();
+        for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+            Cell cell = headerRow.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            columns.add(cell != null ? cell.getStringCellValue().trim() : "");
+        }
+
+        // 2. Lire les lignes de données
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            Map<String, Object> rowMap = new LinkedHashMap<>();
+            for (int i = 0; i < columns.size(); i++) {
+                Cell cell = row.getCell(i, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+                rowMap.put(columns.get(i), getCellValue(cell));
+            }
+            rows.add(rowMap);
+        }
+        return rows;
+    }
+
+    /**
+     * Extrait la valeur d'une cellule sous forme d'objet Java (String, Number, Date, Boolean).
+     */
+    private Object getCellValue(Cell cell) {
+        if (cell == null) return null;
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                // Vérifier si c'est une date formatée
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue();
+                }
+                double num = cell.getNumericCellValue();
+                // Si pas de décimale, retourner un Long pour éviter les problèmes de typage
+                if (num == Math.floor(num) && !Double.isInfinite(num) && num <= Long.MAX_VALUE && num >= Long.MIN_VALUE) {
+                    return (long) num;
+                }
+                return num;
+            case BOOLEAN:
+                return cell.getBooleanCellValue();
+            case FORMULA:
+                // Tenter d'évaluer la formule
+                try {
+                    FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+                    CellValue cv = evaluator.evaluate(cell);
+                    switch (cv.getCellType()) {
+                        case NUMERIC: return cv.getNumberValue();
+                        case STRING: return cv.getStringValue();
+                        case BOOLEAN: return cv.getBooleanValue();
+                        default: return null;
+                    }
+                } catch (Exception e) {
+                    // En cas d'erreur, retourner le résultat string
+                    try { return cell.getStringCellValue(); } catch (Exception ex) { return null; }
+                }
+            default:
+                return null;
+        }
+    }
+
+    // ── Écriture / modification ───────────────────────────────────────────
+
+    /**
+     * Insère une nouvelle ligne à la fin de la feuille.
+     *
+     * @param tableName nom de la feuille
+     * @param values    valeurs des colonnes (clé = nom colonne)
+     */
+    public void insertRow(String tableName, Map<String, Object> values) {
+        Sheet sheet = workbook.getSheet(tableName);
+        if (sheet == null) return;
+
+        // Récupérer l'ordre des colonnes depuis l'en-tête
+        List<String> columns = getHeaderColumns(sheet);
+        int newRowIdx = sheet.getLastRowNum() + 1;
+        Row newRow = sheet.createRow(newRowIdx);
+
+        for (int i = 0; i < columns.size(); i++) {
+            String colName = columns.get(i);
+            Object value = values.get(colName);
+            Cell cell = newRow.createCell(i);
+            setCellValue(cell, value);
+        }
+    }
+
+    /**
+     * Remplace toutes les données d'une feuille par la nouvelle liste de lignes.
+     * L'en-tête est conservée.
+     *
+     * @param tableName nom de la feuille
+     * @param rows      nouvelles lignes (chaque map contient les colonnes)
+     */
+    public void updateRows(String tableName, List<Map<String, Object>> rows) {
+        Sheet sheet = workbook.getSheet(tableName);
+        if (sheet == null) return;
+
+        // Récupérer les noms de colonnes
+        List<String> columns = getHeaderColumns(sheet);
+
+        // Supprimer toutes les lignes sauf l'en-tête (ligne 0)
+        for (int i = sheet.getLastRowNum(); i > 0; i--) {
+            Row row = sheet.getRow(i);
+            if (row != null) sheet.removeRow(row);
+        }
+
+        // Réécrire les données
+        int rowIdx = 1;
+        for (Map<String, Object> rowMap : rows) {
+            Row row = sheet.createRow(rowIdx++);
+            for (int i = 0; i < columns.size(); i++) {
+                Cell cell = row.createCell(i);
+                Object value = rowMap.get(columns.get(i));
+                if (value != null) setCellValue(cell, value);
+            }
+        }
+    }
+
+    /**
+     * Définit la valeur d'une cellule en fonction du type Java.
+     */
+    private void setCellValue(Cell cell, Object value) {
+        if (value == null) {
+            cell.setBlank();
+            return;
+        }
+        if (value instanceof String) {
+            cell.setCellValue((String) value);
+        } else if (value instanceof Long) {
+            cell.setCellValue((Long) value);
+        } else if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
+        } else if (value instanceof Float) {
+            cell.setCellValue((Float) value);
+        } else if (value instanceof Date) {
+            cell.setCellValue((Date) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        } else {
+            cell.setCellValue(value.toString());
+        }
+    }
+
+    /**
+     * Lit les noms de colonnes depuis la première ligne d'une feuille.
+     */
+    private List<String> getHeaderColumns(Sheet sheet) {
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) return Collections.emptyList();
+        List<String> columns = new ArrayList<>();
+        for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+            Cell cell = headerRow.getCell(i);
+            columns.add(cell != null ? cell.getStringCellValue().trim() : "");
+        }
+        return columns;
+    }
+
+    // ── Création / Suppression de tables ──────────────────────────────────
+
+    /**
+     * Crée une nouvelle feuille avec une ligne d'en-tête.
+     *
+     * @param tableName  nom de la nouvelle feuille
+     * @param columnDefs définitions des colonnes (ex: "id INT", "nom VARCHAR")
+     */
+    public void createTable(String tableName, List<String> columnDefs) {
+        Sheet sheet = workbook.createSheet(tableName);
+        Row header = sheet.createRow(0);
+        for (int i = 0; i < columnDefs.size(); i++) {
+            // Extraire le nom de la colonne (le premier mot)
+            String colDef = columnDefs.get(i).trim();
+            String colName = colDef.split("\\s+")[0];
+            header.createCell(i).setCellValue(colName);
+        }
+    }
+
+    /**
+     * Supprime la feuille correspondant à la table.
+     */
+    public void dropTable(String tableName) {
+        int index = workbook.getSheetIndex(tableName);
+        if (index >= 0) workbook.removeSheetAt(index);
+    }
+
+    // ── Liste des tables ──────────────────────────────────────────────────
+
+    /**
+     * Retourne la liste de toutes les feuilles (tables) du classeur.
+     */
+    public List<String> getTableNames() {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            names.add(workbook.getSheetName(i));
+        }
+        return names;
+    }
+
+    // ── Sauvegarde du fichier Excel ───────────────────────────────────────
+
+    /**
+     * Sauvegarde le classeur dans le fichier d'origine.
+     */
+    public void save(String filePath) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            workbook.write(fos);
+        }
+    }
+
+    /**
+     * Méthode pratique utilisant le chemin stocké dans l'instance.
+     */
+    public void save() throws IOException {
+        save(this.filePath);
+    }
+}

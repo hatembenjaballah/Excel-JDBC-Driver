@@ -1,0 +1,101 @@
+package com.exceljdbc;
+
+import com.exceljdbc.util.ExcelConnectionURL;
+
+import java.sql.*;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+/**
+ * Implémentation de {@link java.sql.Driver} pour les fichiers Excel.
+ * <p>
+ * Ce driver s'enregistre automatiquement auprès du {@link DriverManager}
+ * lors du chargement de la classe. Il accepte les URLs de la forme :
+ * </p>
+ * <pre>jdbc:excel:file=&lt;chemin_absolu_ou_relatif&gt;</pre>
+ */
+public class ExcelDriver implements Driver {
+
+    // ── Bloc static : enregistrement automatique du driver ─────────────────
+    static {
+        try {
+            DriverManager.registerDriver(new ExcelDriver());
+        } catch (SQLException e) {
+            throw new RuntimeException("Impossible d'enregistrer le driver Excel JDBC", e);
+        }
+    }
+
+    /**
+     * Tente d'établir une connexion à un fichier Excel à partir de l'URL donnée.
+     *
+     * @param url  URL JDBC (doit commencer par "jdbc:excel:file=")
+     * @param info propriétés de connexion (conservées mais non utilisées pour l'instant)
+     * @return un objet {@link ExcelConnection} si l'URL est acceptée, {@code null} sinon
+     * @throws SQLException si l'ouverture du fichier échoue
+     */
+    @Override
+    public Connection connect(String url, Properties info) throws SQLException {
+        if (!acceptsURL(url)) {
+            return null; // Retourne null si l'URL n'est pas destinée à ce driver
+        }
+
+        // Extrait le chemin du fichier depuis l'URL
+        ExcelConnectionURL parsedUrl = new ExcelConnectionURL(url);
+        String filePath = parsedUrl.getFilePath();
+
+        // Crée et retourne une nouvelle connexion Excel
+        return new ExcelConnection(filePath, info);
+    }
+
+    /**
+     * Vérifie si le driver est capable de traiter l'URL fournie.
+     * <p>
+     * La vérification se base sur le préfixe {@code jdbc:excel:}.
+     * </p>
+     *
+     * @param url l'URL JDBC à tester
+     * @return {@code true} si l'URL commence par {@code jdbc:excel:}
+     */
+    @Override
+    public boolean acceptsURL(String url) {
+        return url != null && url.startsWith("jdbc:excel:");
+    }
+
+    /**
+     * Retourne les informations sur les propriétés attendues par ce driver.
+     * Aucune propriété spécifique n'est requise pour l'instant.
+     */
+    @Override
+    public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
+        return new DriverPropertyInfo[0];
+    }
+
+    /** Version majeure du driver. */
+    @Override
+    public int getMajorVersion() {
+        return 1;
+    }
+
+    /** Version mineure du driver. */
+    @Override
+    public int getMinorVersion() {
+        return 0;
+    }
+
+    /**
+     * Indique si ce driver est conforme à la spécification JDBC.
+     * @return {@code false} car toutes les fonctionnalités ne sont pas implémentées
+     */
+    @Override
+    public boolean jdbcCompliant() {
+        return false;
+    }
+
+    /**
+     * Retourne le logger parent pour ce driver.
+     */
+    @Override
+    public Logger getParentLogger() {
+        return Logger.getLogger("exceljdbc");
+    }
+}

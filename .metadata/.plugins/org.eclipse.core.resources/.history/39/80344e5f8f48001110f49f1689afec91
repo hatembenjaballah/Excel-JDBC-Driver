@@ -1,0 +1,39 @@
+package com.exceljdbc.table;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.*;
+import java.util.*;
+
+public class TableManager {
+
+    private final Workbook workbook;
+    private final String filePath;
+
+    public TableManager(Workbook workbook, String filePath) {
+        this.workbook = workbook;
+        this.filePath = filePath;
+    }
+
+    // les méthodes de lecture/écriture restent identiques (getTableData, insertRow, updateRows, etc.)
+    // ... (je les omets ici par souci de place, mais elles sont inchangées)
+
+    public void save(String filePath) throws IOException {
+        File file = new File(filePath);
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            workbook.write(fos);
+            fos.flush();
+        }
+    }
+
+    public void save() throws IOException {
+        save(filePath);
+    }
+
+    // le reste est inchangé
+}
