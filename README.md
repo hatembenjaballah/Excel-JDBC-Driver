@@ -1,6 +1,5 @@
 # 📊 Excel JDBC Driver
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/hatembenjaballah/excel-jdbc-driver/releases)
 
 Un driver JDBC en Java qui transforme un fichier Excel en une base de données relationnelle.  
